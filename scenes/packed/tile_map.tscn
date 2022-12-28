@@ -1,0 +1,58 @@
+[gd_scene load_steps=8 format=3 uid="uid://dsn8fo37wc7qj"]
+
+[ext_resource type="Script" path="res://src/editor/tile-map.gd" id="1_ejcm1"]
+[ext_resource type="Script" path="res://src/controls/camera.gd" id="2_limbw"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/water.tres" id="3_1mmkp"]
+[ext_resource type="Script" path="res://src/modules/water.gd" id="3_7yuoi"]
+[ext_resource type="Texture2D" uid="uid://cp5g4bmby0cyo" path="res://assets/textures/land_texture.png" id="5_70dlk"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_fv2mj"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_3jput"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[node name="tile-map" type="Node3D"]
+script = ExtResource("1_ejcm1")
+
+[node name="tiles" type="Node3D" parent="."]
+
+[node name="container" type="MeshInstance3D" parent="tiles"]
+
+[node name="camera-container" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 0, 0)
+script = ExtResource("2_limbw")
+
+[node name="camera" type="Camera3D" parent="camera-container"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+current = true
+
+[node name="ray" type="RayCast3D" parent="."]
+collision_mask = 2
+
+[node name="tile-indicator" type="MeshInstance3D" parent="."]
+
+[node name="plane" type="StaticBody3D" parent="."]
+transform = Transform3D(12, 0, 0, 0, 1, 0, 0, 0, 12, 0, 0, 0)
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="plane"]
+shape = SubResource("ConcavePolygonShape3D_fv2mj")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="plane"]
+shape = SubResource("ConcavePolygonShape3D_3jput")
+
+[node name="water" type="MeshInstance3D" parent="."]
+mesh = ExtResource("3_1mmkp")
+script = ExtResource("3_7yuoi")
+land_texture = ExtResource("5_70dlk")
+
+[node name="SimulationViewport" type="SubViewport" parent="water"]
+
+[node name="ColorRect" type="ColorRect" parent="water/SimulationViewport"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CollisionViewport" type="SubViewport" parent="water"]
+
+[node name="CollisionCamera" type="Camera3D" parent="water/CollisionViewport"]

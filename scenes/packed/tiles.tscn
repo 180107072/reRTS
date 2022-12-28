@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://b08l06mwfqvk8"]
+
+[ext_resource type="ArrayMesh" uid="uid://b03c8xmr27aii" path="res://assets/meshes/tileset/sand/corner.mesh" id="1_ucs4l"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/tileset/sand/edge.mesh" id="2_lgl48"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/tileset/sand/middle.mesh" id="3_iwunu"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/tileset/sand/solo.mesh" id="4_hqp85"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/tileset/sand/solo_edge.mesh" id="5_snm6l"]
+[ext_resource type="ArrayMesh" path="res://assets/meshes/tileset/sand/solo_middle.mesh" id="6_l2fer"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0xlmj"]
+albedo_color = Color(0.945098, 0.933333, 0.603922, 1)
+
+[node name="tiles" type="Node3D"]
+
+[node name="sand" type="Node3D" parent="."]
+
+[node name="Solo" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.02481, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("4_hqp85")
+skeleton = NodePath("../..")
+
+[node name="Corner" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.43048, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("1_ucs4l")
+skeleton = NodePath("../..")
+
+[node name="Edge" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.51898, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("2_lgl48")
+skeleton = NodePath("../..")
+
+[node name="Middle" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.99123, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("3_iwunu")
+skeleton = NodePath("../..")
+
+[node name="SoloEdge" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.39938, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("5_snm6l")
+skeleton = NodePath("../..")
+
+[node name="SoloMiddle" type="MeshInstance3D" parent="sand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0130059, 0, 0.938689)
+material_override = SubResource("StandardMaterial3D_0xlmj")
+mesh = ExtResource("6_l2fer")
+skeleton = NodePath("../..")
