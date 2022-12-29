@@ -1,10 +1,99 @@
-[gd_scene load_steps=3 format=3 uid="uid://b32gb0u4otxj4"]
+[gd_scene load_steps=4 format=3 uid="uid://b32gb0u4otxj4"]
 
-[ext_resource type="Material" path="res://assets/materials/water.material" id="1_dphjk"]
+[sub_resource type="Shader" id="Shader_ki4dn"]
+code = "shader_type spatial;
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_k7dsx"]
-material = ExtResource("1_dphjk")
-size = Vector2(60, 60)
+uniform float depthOffset = -0.75;
+uniform vec4 wave1 = vec4(0.5, 1, 0.15, 3);
+uniform vec4 wave2 = vec4(0.8, 2.6, 0.30, 1.55);
+uniform vec4 wave3 = vec4(1.5, 0.8, 0.25, 0.9);
 
-[node name="water" type="MeshInstance3D"]
-mesh = SubResource("PlaneMesh_k7dsx")
+uniform float foam_level = 0.2f;
+
+uniform vec4 colorDeep : source_color;
+uniform vec4 colorShallow : source_color;
+
+varying float vertex_height;
+
+varying mat4 inv_mvp;
+
+vec4 wave(vec4 parameter, vec2 position, float time, inout vec3 tangent, inout vec3 binormal)
+{
+	float wave_steepness = parameter.z;
+	float wave_length = parameter.w;
+
+	float k = 2.0 * 3.14159265359 / wave_length;
+	float c = sqrt(9.8 / k);
+//	vec2 d = normalize(parameter.xy);
+	vec2 d = parameter.xy;
+//	float f	 = k * (dot(d, position) - c * time);
+	float f	 = k * (dot(d, position) - c + time);
+	float a = wave_steepness / k;
+	
+	tangent += normalize(vec3(1.0-d.x * d.x * (wave_steepness * sin(f)), d.x * (wave_steepness * cos(f)), -d.x * d.y * (wave_steepness * sin(f))));
+	binormal += normalize(vec3(-d.x * d.y * (wave_steepness * sin(f)), d.y * (wave_steepness * cos(f)), 1.0-d.y * d.y * (wave_steepness * sin(f))));
+	
+	return vec4(d.x * (a * cos(f)), a * sin(f) * 0.25, d.y * (a * cos(f)), 0.0);
+}
+
+void vertex()
+{
+	vec4 vertex = vec4(VERTEX, 1.0);
+	vec3 vertexPosition = (MODEL_MATRIX * vertex).xyz;
+	
+	vec3 vertexTangent = vec3(0.0, 0.0, 0.0);
+	vec3 vertexBinormal = vec3(0.0, 0.0, 0.0);
+	vertex += wave(wave1, vertexPosition.xz, TIME, vertexTangent, vertexBinormal);
+	vertex += wave(wave2, vertexPosition.xz, TIME, vertexTangent, vertexBinormal);
+	vertex += wave(wave3, vertexPosition.xz, TIME, vertexTangent, vertexBinormal);
+	
+	TANGENT = vertexTangent;
+	BINORMAL = vertexBinormal;
+	vec3 vertex_normal = normalize(cross(vertexBinormal, vertexTangent));
+	NORMAL = vertex_normal;
+	
+	VERTEX = vertex.xyz;
+	
+	inv_mvp = inverse(PROJECTION_MATRIX * MODELVIEW_MATRIX);
+}
+
+void fragment()
+{
+	float depthRaw = texture(DEPTH_TEXTURE, SCREEN_UV).r * 2.0 - 1.0;
+	float depth = PROJECTION_MATRIX[3][2] / (depthRaw + PROJECTION_MATRIX[2][2]);
+	
+	float depthBlend = exp((depth+VERTEX.z + depthOffset) * -2.0);
+	depthBlend = clamp(1.0-depthBlend, 0.0, 1.0);
+	float depthBlendPow = clamp(pow(depthBlend, 2.5), 0.0, 10.0);
+	
+	vec3 screenColor = textureLod(SCREEN_TEXTURE, SCREEN_UV + (NORMAL.xz * 0.02), depthBlendPow * 2.5).rgb;
+	vec3 dyeColor = mix(colorShallow.rgb, colorDeep.rgb, depthBlendPow);
+	vec3 color = mix(screenColor*dyeColor, dyeColor*0.25, depthBlendPow*0.5);
+	
+	float foamAmount = max(min(1.0, (foam_level - depth - VERTEX.z) / foam_level), 0.0);
+	
+	ALBEDO = mix(color, vec3(1.0, 1.0, 1.0), foamAmount);
+	SPECULAR = mix(0.2 * depthBlendPow * 0.4, 0.1, foamAmount);
+	ROUGHNESS = mix(0.2, 1.0, foamAmount);
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_knxy4"]
+render_priority = 0
+shader = SubResource("Shader_ki4dn")
+shader_parameter/depthOffset = null
+shader_parameter/wave1 = Vector4(0.2, 0.5, 0.15, 3)
+shader_parameter/wave2 = Vector4(2, 0.2, 0.1, 5)
+shader_parameter/wave3 = Vector4(1.5, 0.8, 0.25, 5)
+shader_parameter/foam_level = null
+shader_parameter/colorDeep = Color(0.364706, 0.494118, 0.729412, 1)
+shader_parameter/colorShallow = Color(0.952941, 0.894118, 0.788235, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sc6qe"]
+material = SubResource("ShaderMaterial_knxy4")
+size = Vector2(500, 500)
+subdivide_width = 2000
+subdivide_depth = 2000
+
+[node name="Node3D" type="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("PlaneMesh_sc6qe")

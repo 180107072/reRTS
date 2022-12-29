@@ -1,15 +1,31 @@
-[gd_scene load_steps=8 format=3 uid="uid://dsn8fo37wc7qj"]
+[gd_scene load_steps=9 format=3 uid="uid://dsn8fo37wc7qj"]
 
 [ext_resource type="Script" path="res://src/editor/tile-map.gd" id="1_ejcm1"]
 [ext_resource type="Script" path="res://src/controls/camera.gd" id="2_limbw"]
-[ext_resource type="ArrayMesh" path="res://assets/meshes/water.tres" id="3_1mmkp"]
-[ext_resource type="Script" path="res://src/modules/water.gd" id="3_7yuoi"]
-[ext_resource type="Texture2D" uid="uid://cp5g4bmby0cyo" path="res://assets/textures/land_texture.png" id="5_70dlk"]
+[ext_resource type="PackedScene" uid="uid://b32gb0u4otxj4" path="res://scenes/packed/water.tscn" id="3_4joft"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_fv2mj"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_3jput"]
 data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_cm8ji"]
+
+[sub_resource type="Sky" id="Sky_hpukf"]
+sky_material = SubResource("ProceduralSkyMaterial_cm8ji")
+
+[sub_resource type="Environment" id="Environment_3hn43"]
+background_mode = 2
+sky = SubResource("Sky_hpukf")
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.0244
+volumetric_fog_length = 228.1
+volumetric_fog_ambient_inject = 0.98
 
 [node name="tile-map" type="Node3D"]
 script = ExtResource("1_ejcm1")
@@ -23,7 +39,7 @@ transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -
 script = ExtResource("2_limbw")
 
 [node name="camera" type="Camera3D" parent="camera-container"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10)
+transform = Transform3D(1, 2.98023e-08, -2.98023e-08, 0, 1, -3.27826e-07, 0, 7.45058e-08, 1, 0, 1.90735e-06, 10)
 current = true
 
 [node name="ray" type="RayCast3D" parent="."]
@@ -42,17 +58,12 @@ shape = SubResource("ConcavePolygonShape3D_fv2mj")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="plane"]
 shape = SubResource("ConcavePolygonShape3D_3jput")
 
-[node name="water" type="MeshInstance3D" parent="."]
-mesh = ExtResource("3_1mmkp")
-script = ExtResource("3_7yuoi")
-land_texture = ExtResource("5_70dlk")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3hn43")
 
-[node name="SimulationViewport" type="SubViewport" parent="water"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.441819, 0.743225, -0.502407, 0, 0.560032, 0.828471, 0.897104, 0.366034, -0.247433, 0, 3.76809, 0)
+shadow_enabled = true
+shadow_bias = 10.0
 
-[node name="ColorRect" type="ColorRect" parent="water/SimulationViewport"]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="CollisionViewport" type="SubViewport" parent="water"]
-
-[node name="CollisionCamera" type="Camera3D" parent="water/CollisionViewport"]
+[node name="water" parent="." instance=ExtResource("3_4joft")]
