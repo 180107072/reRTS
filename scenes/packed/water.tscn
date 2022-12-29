@@ -91,8 +91,8 @@ shader_parameter/colorShallow = Color(0.952941, 0.894118, 0.788235, 1)
 [sub_resource type="PlaneMesh" id="PlaneMesh_sc6qe"]
 material = SubResource("ShaderMaterial_knxy4")
 size = Vector2(500, 500)
-subdivide_width = 2000
-subdivide_depth = 2000
+subdivide_width = 400
+subdivide_depth = 400
 
 [node name="Node3D" type="MeshInstance3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
