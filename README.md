@@ -4,4 +4,4 @@
 
 # Loading 0% [______________]
 
-- The game is in it's very early stage, we are currently preparing the assets.
+- The game is in it's very early stage, we are currently preparing the assets
