@@ -7,6 +7,8 @@ extends MeshInstance3D
 @onready var ray_cast = get_node('../ray') 
 @onready var camera   = get_node('camera') 
 @onready var viewport = get_node('../../../VP') 
+@onready var water = get_node('../Water')
+@onready var water_shader = preload("res://src/shaders/WaterShader.tres")
 const MOVE_MARGIN = 20
 const MOVE_SPEED = 20
 var tile_pos   := Vector3.ZERO
@@ -54,6 +56,14 @@ func _init_game_mode() -> void:
 #	return space_state.intersect_ray(prqp)
 
 func _physics_process(delta: float) -> void:
+	water.position = Vector3(position.x, -0.2, position.z)
+
+	water.mesh.surface_get_material(0).set_shader_parameter("wave1",  Vector3(position.x, position.z, position.z) / 10)
+	water.mesh.surface_get_material(0).set_shader_parameter("wave2", -Vector3(position.x, position.z, position.z) / 10 )
+	print(position)
+#	water.mesh.material.set_shader_parameter("shader_parameter/wave1", position  * 1000)
+#	water.set_material_override(water_shader)
+#
 	if G.mode == G.EDIT_MODE: # Level Editor Mode
 		if !is_rot && !is_pan:
 			var mouse = get_viewport().get_mouse_position()
@@ -63,9 +73,7 @@ func _physics_process(delta: float) -> void:
 			ray_cast.target_position = to
 			ray_cast.position = from
 		if can_draw:
-			print(ray_cast.is_colliding())
 			if ray_cast.is_colliding() && (!is_rot && !is_pan):
-				print("OK")
 				var _pos = ray_cast.get_collision_point().floor()
 				_pos.y = tilemap.level * tilemap.height
 				_pos.x += 0.5
@@ -76,7 +84,6 @@ func _physics_process(delta: float) -> void:
 				tilemap.ray_not_colliding()
 		#ON tile mouse enter
 		if last_pos != tile_pos:
-			print("ENTER")
 			tilemap._on_tile_mouse_enter()
 			last_pos = tile_pos
 #		if is_motion:

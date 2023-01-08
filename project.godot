@@ -21,4 +21,10 @@ G="*res://src/constants/global.gd"
 
 [rendering]
 
+anti_aliasing/screen_space_roughness_limiter/enabled=false
 environment/screen_space_reflection/roughness_quality=3
+anti_aliasing/quality/msaa_2d=3
+anti_aliasing/quality/msaa_3d=3
+anti_aliasing/quality/screen_space_aa=1
+anti_aliasing/quality/use_taa=true
+anti_aliasing/quality/use_debanding=true

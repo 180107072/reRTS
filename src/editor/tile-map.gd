@@ -96,7 +96,6 @@ func load_tilemap():
 
 # update navmesh [ctrl / E]
 func update_navmesh():
-	print('update_navmesh')
 	tiles_node.clear_navmesh()
 	tiles_node.bake_navmesh()
 
@@ -200,7 +199,6 @@ func draw_tile(_tile_pos : Vector3, _layer := cur_layer, _tile_name := cur_tile_
 					update_tile(_neighs[i], _name)
 	var _data = get_tile_data(get_neighs(_tile_pos, _layer, _tile_name, inc_ind), _tile_name)
 	
-	print(_data[TILE_NODE])
 	tiles_node.add_child(_data[TILE_NODE])
 	_data[TILE_NODE].set_owner(tiles_node)
 	# _data[TILE_NODE].get_child(0).set_owner(tiles_node)
@@ -319,7 +317,6 @@ func get_tile_pos(_tile : Vector3) -> Vector3:
 func get_neighs(_tile_pos : Vector3, _layer := cur_layer,_tile_name := cur_tile_name, include_ind := false) -> Array:
 	var _neighs = [false, false, false, false]
 	if tiles[cur_tile_name].size() == 1:
-		print('one_role')
 		return _neighs
 	var _tiles = get_tiles(_layer)
 	for i in 4:

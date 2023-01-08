@@ -1,8 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dsn8fo37wc7qj"]
+[gd_scene load_steps=11 format=3 uid="uid://dpcpdeq4uu1j6"]
 
 [ext_resource type="Script" path="res://src/editor/tile-map.gd" id="1_ejcm1"]
 [ext_resource type="Script" path="res://src/controls/camera.gd" id="2_limbw"]
-[ext_resource type="PackedScene" uid="uid://b32gb0u4otxj4" path="res://scenes/packed/water.tscn" id="3_4joft"]
+[ext_resource type="Shader" uid="uid://bbo1abph4arco" path="res://src/shaders/WaterShader.tres" id="3_5eony"]
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_fv2mj"]
 
@@ -21,11 +21,26 @@ ssr_enabled = true
 ssao_enabled = true
 ssil_enabled = true
 sdfgi_enabled = true
+sdfgi_use_occlusion = true
 glow_enabled = true
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0244
+volumetric_fog_density = 0.1091
 volumetric_fog_length = 228.1
 volumetric_fog_ambient_inject = 0.98
+adjustment_enabled = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s2s0c"]
+render_priority = 0
+shader = ExtResource("3_5eony")
+shader_parameter/ColorParameter = null
+shader_parameter/wave1 = null
+shader_parameter/wave2 = null
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_gtmqw"]
+material = SubResource("ShaderMaterial_s2s0c")
+size = Vector2(100, 100)
+subdivide_width = 20
+subdivide_depth = 20
 
 [node name="tile-map" type="Node3D"]
 script = ExtResource("1_ejcm1")
@@ -66,4 +81,6 @@ transform = Transform3D(-0.441819, 0.743225, -0.502407, 0, 0.560032, 0.828471, 0
 shadow_enabled = true
 shadow_bias = 10.0
 
-[node name="water" parent="." instance=ExtResource("3_4joft")]
+[node name="Water" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.806, 0)
+mesh = SubResource("PlaneMesh_gtmqw")
