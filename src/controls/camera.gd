@@ -8,7 +8,7 @@ extends MeshInstance3D
 @onready var camera   = get_node('camera') 
 @onready var viewport = get_node('../../../VP') 
 @onready var water = get_node('../Water')
-@onready var water_shader = preload("res://src/shaders/WaterShader.tres")
+@onready var water_shader = preload("res://src/shaders/visual/water_shader.tres")
 const MOVE_MARGIN = 20
 const MOVE_SPEED = 20
 var tile_pos   := Vector3.ZERO
@@ -44,28 +44,16 @@ func _init_game_mode() -> void:
 	pass
 #END
 
-#func raycast_from_mouse(collision_mask):
-#	var ray_start: Vector3 = cam.project_ray_origin(m_pos)
-#	var ray_end: Vector3 = ray_start + cam.project_ray_normal(m_pos) * ray_length
-#	var space_state = get_world_3d().direct_space_state
-#	var prqp := PhysicsRayQueryParameters3D.new()
-#	prqp.from = ray_start
-#	prqp.to = ray_end
-#	prqp.collide_with_areas = collision_mask
-#	prqp.exclude = []
-#	return space_state.intersect_ray(prqp)
-
-func _physics_process(delta: float) -> void:
+func move_noise() -> void:
 	water.position = Vector3(position.x, -0.2, position.z)
 
 	water.mesh.surface_get_material(0).set_shader_parameter("wave1",  Vector3(position.x, position.z, position.z) / 10)
 	water.mesh.surface_get_material(0).set_shader_parameter("wave2", -Vector3(position.x, position.z, position.z) / 10 )
-	print(position)
-#	water.mesh.material.set_shader_parameter("shader_parameter/wave1", position  * 1000)
-#	water.set_material_override(water_shader)
-#
+
+func _physics_process(delta: float) -> void:
 	if G.mode == G.EDIT_MODE: # Level Editor Mode
 		if !is_rot && !is_pan:
+			move_noise()
 			var mouse = get_viewport().get_mouse_position()
 			var from = camera.project_ray_origin(mouse)
 			var to = from + camera.project_ray_normal(mouse) * ray_length
